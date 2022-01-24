@@ -1,6 +1,7 @@
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const stream = require('stream');
 
 const server = new http.Server();
 
@@ -26,18 +27,16 @@ const fileReader = (filePath, response) => {
     'Content-Length': stat.size,
   });
 
-  fs.createReadStream(filePath)
-      .on('error', () => {
-        response.statusCode = 500;
-        response.statusMessage = 'File read error.';
+  stream.pipeline(
+      fs.createReadStream(filePath),
+      response,
+      (err)=>{
+        if (err) {
+          response.statusCode = 500;
+        }
         response.end();
-      })
-      .pipe(response)
-      .on('error', () => {
-        response.statusCode = 500;
-        response.statusMessage = 'File send error.';
-        response.end();
-      });
+      },
+  );
 };
 
 server.on('request', (req, res) => {
