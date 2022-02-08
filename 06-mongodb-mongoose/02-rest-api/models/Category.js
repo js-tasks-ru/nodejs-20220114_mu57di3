@@ -17,4 +17,8 @@ const categorySchema = new mongoose.Schema({
   subcategories: [subCategorySchema],
 });
 
+categorySchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
+
 module.exports = connection.model('Category', categorySchema);

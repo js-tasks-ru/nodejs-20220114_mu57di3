@@ -32,4 +32,8 @@ const productSchema = new mongoose.Schema({
 
 });
 
+productSchema.virtual('id').get(function() {
+  return this._id.toHexString();
+});
+
 module.exports = connection.model('Product', productSchema);
